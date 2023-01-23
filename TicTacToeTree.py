@@ -1,3 +1,5 @@
+import math
+
 from treelib import Node, Tree
 import copy
 import datetime
@@ -82,6 +84,7 @@ class TicTacToeGame:
     def setUpTree(self, p, symbol, i):
         x = p.data.expand(symbol)
         if len(x) == 0:
+            # p.data.minimax = p.data.isWinningBoardValue
             return i
         else:
             if symbol == 'X':
@@ -90,12 +93,14 @@ class TicTacToeGame:
                 symbol = 'X'
             for b in x:
                 i = i + 1
-                j = self.has_symmetry(b)
-                s = self.gametree.create_node(symbol, parent=p, identifier=i, data=b)
+                j = self.has_symmetry_ultra_short(b)
+
                 if j < 0:
+                    s = self.gametree.create_node(symbol, parent=p, identifier=i, data=b)
                     i = self.setUpTree(s, symbol, i)
                 else:
-                    s.data.symmetry_id = j
+                    pass
+                    # s.data.symmetry_id = j
                 # TODO minimax
                 # TODO alphabeta
             return i
@@ -308,7 +313,7 @@ class TicTacToeGame:
                     return node_board.identifier
         return -1
 
-    def baMin(self, board, alpha, beta):
+    def baMin(self, board, alpha=-math.inf, beta=math.inf):
         # print("bamin",alpha,beta)
         if board.isWinning():
             return board.isWinningBoardValue
@@ -324,7 +329,7 @@ class TicTacToeGame:
                 return minwert
         return minwert
 
-    def baMax(self, board, alpha, beta):
+    def baMax(self, board, alpha=-math.inf, beta=math.inf):
         # print("bamax",alpha, beta)
         if board.isWinning():
             return board.isWinningBoardValue
@@ -361,6 +366,9 @@ class TicTacToeGame:
         for x in nextmoves:
             res.append(self.minimax(x))
         return max(res)
+
+    def maximin_neu(self, board):
+        return self.getValue(self.gametree.get_node(self.has_symmetry_ultra_short(board)))
 
 
 def exp():
@@ -405,7 +413,7 @@ def main3():
     ttt.setUpTree(root, 'X', 0)
     print(ttt.getValue(root))
     print(len(ttt.gametree.all_nodes()))
-    print(TicTacToeGame().maximin(TicTacToeBoard([['_', '_', 'X'], ['_', 'O', '_'], ['X', '_', '_']])))
+    # print(TicTacToeGame().maximin(TicTacToeBoard([['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']])))
     '''for i in range(100):
         print(ttt.gametree.get_node(i).data.symmetry_id)'''
 
@@ -437,5 +445,47 @@ def main5():
     board = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
 
 
+def main():
+    board = TicTacToeBoard([['X', 'O', 'X'], ['X', 'O', '_'], ['O', '_', '_']])
+    t1 = datetime.datetime.now()
+    ttt = TicTacToeGame(board.board)
+    root = ttt.gametree.get_node(0)
+    ttt.setUpTree(root, 'X', 0)
+    t2 = datetime.datetime.now()
+
+    t3 = t2 - t1
+    optimized_erg = t3.microseconds
+    optimized_erg += t3.seconds * 1000000
+
+    t1 = datetime.datetime.now()
+    x = TicTacToeGame().maximin(board)
+    t2 = datetime.datetime.now()
+
+    t3 = t2 - t1
+    minimax_erg = t3.microseconds
+    minimax_erg += t3.seconds * 1000000
+
+    t1 = datetime.datetime.now()
+    y = TicTacToeGame().baMax(board)
+    t2 = datetime.datetime.now()
+
+    t3 = t2 - t1
+    alphabeta_erg = t3.microseconds
+    alphabeta_erg += t3.seconds * 1000000
+    print(len(ttt.gametree.all_nodes()))
+
+    t1 = datetime.datetime.now()
+    z = ttt.getValue(ttt.gametree.get_node(0))
+    t2 = datetime.datetime.now()
+
+    t3 = t2 - t1
+    method_erg = t3.microseconds
+    method_erg += t3.seconds * 1000000
+    print(len(ttt.gametree.all_nodes()))
+    print(x, y, z)
+    print(f"{optimized_erg=}, {minimax_erg=}, {alphabeta_erg=}, {method_erg=}")
+    print(ttt.maximin_neu(board))
+
+
 if __name__ == "__main__":
-    main3()
+    main()
