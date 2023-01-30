@@ -486,6 +486,7 @@ def main():
     print(f"{optimized_erg=}, {minimax_erg=}, {alphabeta_erg=}, {method_erg=}")
     print(ttt.maximin_neu(board))
 
+# Kleine Änderung wegen Github
 
 if __name__ == "__main__":
     main()
