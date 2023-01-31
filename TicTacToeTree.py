@@ -81,7 +81,7 @@ class TicTacToeGame:
     def printTree(self):
         self.gametree.get_node(0).data.printBoard()
 
-    def setUpTree(self, p, symbol, i):
+    def setUpTree(self, p, symbol, i, short=True):
         x = p.data.expand(symbol)
         if len(x) == 0:
             # p.data.minimax = p.data.isWinningBoardValue
@@ -95,14 +95,14 @@ class TicTacToeGame:
                 i = i + 1
                 j = self.has_symmetry_ultra_short(b)
 
-                if j < 0:
+                if not short:
                     s = self.gametree.create_node(symbol, parent=p, identifier=i, data=b)
-                    i = self.setUpTree(s, symbol, i)
-                else:
-                    pass
-                    # s.data.symmetry_id = j
-                # TODO minimax
-                # TODO alphabeta
+                    s.data.symmetry_id = j
+                if j < 0:
+                    if short:
+                        s = self.gametree.create_node(symbol, parent=p, identifier=i, data=b)
+                    i = self.setUpTree(s, symbol, i, short)
+
             return i
 
     def getValue(self, node, symbol='X'):
@@ -444,19 +444,15 @@ def exp():
 def main3():
     ttt = TicTacToeGame()
     root = ttt.gametree.get_node(0)
-    ttt.setUpTree(root, 'X', 0)
-    print(ttt.getValue(root))
-    print(len(ttt.gametree.all_nodes()))
-    # print(TicTacToeGame().maximin(TicTacToeBoard([['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']])))
-    '''for i in range(100):
-        print(ttt.gametree.get_node(i).data.symmetry_id)'''
+    ttt.setUpTree(root, 'X', 0, False)
+
 
 
 def main4():
     ergebnis = 0
     erg_min = 100000000000
     erg_max = 0
-    for i in range(100):
+    for i in range(10):
         t1 = datetime.datetime.now()
         main3()
         t2 = datetime.datetime.now()
@@ -470,8 +466,8 @@ def main4():
             erg_max = zwischen_ergebnis
         print(f"{i=}, {t3=}, {ergebnis=}, {zwischen_ergebnis=}, {erg_max=}, {erg_min=}")
 
-    print(ergebnis / 100)
-    print(float(ergebnis / 100000000))
+    print(ergebnis / 10)
+    print(float(ergebnis / 10000000))
     print(f"{erg_min=}, {erg_max=}")
 
 
@@ -599,4 +595,4 @@ def main_max():
         print()
     """
 if __name__ == "__main__":
-    main_max()
+    main4()
