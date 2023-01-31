@@ -394,7 +394,7 @@ class TicTacToeGame:
     def maximin_neu(self, board):
         return self.getValue(self.gametree.get_node(self.has_symmetry_ultra_short(board)))
 
-    def minimax_test(self, board):
+    def minimax_neu(self, board):
         return self.getValue(self.gametree.get_node(self.has_symmetry_ultra_short(board)), symbol='O')
 
     def baMax_neu(self, board):
@@ -475,24 +475,27 @@ def main5():
     board = [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
 
 
-def main_min():
+def main():
     board = TicTacToeBoard([['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']])
     #board = TicTacToeBoard([['_', '_', 'X'], ['_', 'O', '_'], ['X', '_', '_']]) => bei dem unsere Methode unterschiedlich
     #board = TicTacToeBoard([['O', 'X', 'O'], ['O', 'X', '_'], ['X', '_', '_']]) # unterschiedlich
     #board = TicTacToeBoard([['X', 'O', '_'], ['X', 'O', 'X'], ['O', '_', '_']])
     #board = TicTacToeBoard([['O', 'X', 'O'], ['O', 'X', '_'], ['X', '_', 'X']])
-    t1 = datetime.datetime.now()
+
     ttt = TicTacToeGame(board.board)
     root = ttt.gametree.get_node(0)
     ttt.setUpTree(root, 'X', 0)
+
+    t1 = datetime.datetime.now()
+    maximin = TicTacToeGame().maximin_neu(board)
     t2 = datetime.datetime.now()
 
     t3 = t2 - t1
-    optimized_erg = t3.microseconds
-    optimized_erg += t3.seconds * 1000000
+    maximin_erg = t3.microseconds
+    maximin_erg += t3.seconds * 1000000
 
     t1 = datetime.datetime.now()
-    x = TicTacToeGame().minimax(board)
+    minimax = TicTacToeGame().minimax_neu(board)
     t2 = datetime.datetime.now()
 
     t3 = t2 - t1
@@ -500,33 +503,23 @@ def main_min():
     minimax_erg += t3.seconds * 1000000
 
     t1 = datetime.datetime.now()
-    y = TicTacToeGame().baMin(board)
+    baMax = TicTacToeGame().baMax_neu(board)
     t2 = datetime.datetime.now()
 
     t3 = t2 - t1
-    alphabeta_erg = t3.microseconds
-    alphabeta_erg += t3.seconds * 1000000
-    print(len(ttt.gametree.all_nodes()))
+    bamax_erg = t3.microseconds
+    bamax_erg += t3.seconds * 1000000
 
     t1 = datetime.datetime.now()
-    z = ttt.minimax_test(board)
+    baMin = TicTacToeGame().baMin_neu(board)
     t2 = datetime.datetime.now()
 
     t3 = t2 - t1
-    method_erg = t3.microseconds
-    method_erg += t3.seconds * 1000000
+    bamin_erg = t3.microseconds
+    bamin_erg += t3.seconds * 1000000
 
-    t1 = datetime.datetime.now()
-    z2 = ttt.baMin_neu(board)
-    t2 = datetime.datetime.now()
-
-    t3 = t2 - t1
-    method_erg_ba = t3.microseconds
-    method_erg_ba += t3.seconds * 1000000
-
-    print(len(ttt.gametree.all_nodes()))
-    print(x, y, z, z2)
-    print(f"{optimized_erg=}, {minimax_erg=}, {alphabeta_erg=}, {method_erg=}, {method_erg_ba=}")
+    print(maximin, minimax, baMin, baMax)
+    print(f"{maximin_erg=}, {minimax_erg=}, {bamin_erg=}, {bamax_erg=}")
 """
     for node in ttt.gametree.all_nodes():
         print(ttt.getValue(node))
@@ -541,58 +534,6 @@ def main_min():
 """
 
 
-def main_max():
-    board = TicTacToeBoard([['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']])
-    t1 = datetime.datetime.now()
-    ttt = TicTacToeGame(board.board)
-    root = ttt.gametree.get_node(0)
-    ttt.setUpTree(root, 'X', 0)
-    t2 = datetime.datetime.now()
 
-    t3 = t2 - t1
-    optimized_erg = t3.microseconds
-    optimized_erg += t3.seconds * 1000000
-
-    t1 = datetime.datetime.now()
-    x = TicTacToeGame().maximin(board)
-    t2 = datetime.datetime.now()
-
-    t3 = t2 - t1
-    maximin_erg = t3.microseconds
-    maximin_erg += t3.seconds * 1000000
-
-    t1 = datetime.datetime.now()
-    y = TicTacToeGame().baMax(board)
-    t2 = datetime.datetime.now()
-
-    t3 = t2 - t1
-    alphabeta_erg = t3.microseconds
-    alphabeta_erg += t3.seconds * 1000000
-
-
-    t1 = datetime.datetime.now()
-    z = ttt.maximin_neu(board)
-    t2 = datetime.datetime.now()
-
-    t3 = t2 - t1
-    method_erg = t3.microseconds
-    method_erg += t3.seconds * 1000000
-
-    t1 = datetime.datetime.now()
-    z2 = ttt.baMax_neu(board)
-    t2 = datetime.datetime.now()
-
-    t3 = t2 - t1
-    method_erg_ba = t3.microseconds
-    method_erg_ba += t3.seconds * 1000000
-    print(len(ttt.gametree.all_nodes()))
-    print(x, y, z, z2)
-    print(f"{optimized_erg=}, {maximin_erg=}, {alphabeta_erg=}, {method_erg=}, {method_erg_ba=}")
-
-    """for node in ttt.gametree.all_nodes():
-        print(ttt.getValue(node))
-        node.data.printBoard()
-        print()
-    """
 if __name__ == "__main__":
-    main4()
+    main()
